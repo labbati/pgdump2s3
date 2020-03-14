@@ -88,6 +88,128 @@ Then you can run it as
 docker-compose run --rm backup
 ```
 
+## Usage in kubernetes
+
+The following section assume that a [k8s secret](https://kubernetes.io/docs/concepts/configuration/secret/) `aws-credentials` exists with keys `access-key` and `access-secret`.
+
+You can create one with the following command:
+
+```
+kubectl create secret generic aws-credentials --from-literal=access-key=<aws access key> --from-literal=access-secret='<aws access secret>'
+```
+
+_Note_: you can avoid the command above to be kept in your shell history: see [`HISTORY_IGNORE` for zsh](http://zsh.sourceforge.net/Doc/Release/Parameters.html#Parameters-Used-By-The-Shell) and [`HISTIGNORE` for bash](https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html).
+
+Define a [k8s job](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/) that looks like this:
+
+```
+# file: backup-job.yml
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backup
+spec:
+  template:
+    spec:
+      containers:
+        - name: backup
+          image: labbati/pgdump2s3
+          imagePullPolicy: Always
+          env:
+            - name: PGHOST
+              value: <host>
+            - name: PGDATABASE
+              value: <database name>
+            - name: PGUSER
+              value: <user e.g. from a secret>
+            - name: PGPASSWORD
+              value: <password e.g. from a secret>
+            - name: VERIFY_BACKUP
+              value: verify
+            - name: VERIFY_TABLE_NAME
+              value: <a table you expect to be in the backup>
+            - name: AWS_S3_BUCKET
+              value: <your bucket name>
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: access-secret
+      restartPolicy: Never
+  backoffLimit: 1
+```
+
+Then apply it
+
+```
+kubectl apply -f backup-job.yml
+```
+
+Of course you can check logs
+
+```
+kubectl logs -f backup-<pod unique>
+```
+
+You can also transform the job above into a recurring job defining a k8s [`CronJob`](). As an example you can rewrite the
+above job into the following, that will backup your database at 00:30 in the k8s cluster manager timezone every night.
+
+```
+# file: backup-cronjob.yml
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: backup
+spec:
+  schedule: '30 0 * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: backup
+              image: labbati/pgdump2s3
+              imagePullPolicy: Always
+              env:
+                - name: PGHOST
+                  value: <host>
+                - name: PGDATABASE
+                  value: <database name>
+                - name: PGUSER
+                  value: <user e.g. from a secret>
+                - name: PGPASSWORD
+                  value: <password e.g. from a secret>
+                - name: VERIFY_BACKUP
+                  value: verify
+                - name: VERIFY_TABLE_NAME
+                  value: <a table you expect to be in the backup>
+                - name: AWS_S3_BUCKET
+                  value: <your bucket name>
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-credentials
+                      key: access-key
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-credentials
+                      key: access-secret
+          restartPolicy: Never
+```
+And then apply it
+
+```
+kubectl apply -f backup-cronjob.yaml
+```
+
 ## License: MIT
 
 MIT License
