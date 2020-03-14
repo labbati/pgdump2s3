@@ -13,6 +13,6 @@ shell: build
 release:
 	@git tag v${VERSION}
 	@git push --tag origin v${VERSION}
-	@echo "Released version v${VERSION}. It will take a few minutes before it is available on docker hub/"
+	@echo "Released version v${VERSION}. It will take a few minutes before it is available on docker hub"
 
 .PONY: help build shell release
