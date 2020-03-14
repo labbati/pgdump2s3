@@ -14,7 +14,7 @@ export VERIFY_SCHEMA_NAME=${VERIFY_SCHEMA_NAME:-public}
 export VERIFY_TABLE_NAME=${VERIFY_TABLE_NAME}
 
 backup_filename=backup-$(date '+%FT%H-%M-%S%Z')
-restore_database_name="pgdump2s3_${restore_database_name}"
+restore_database_name="pgdump2s3_backup_verify"
 
 echo "Dumping content to file: ${backup_filename}"
 pg_dump ${PGDUMP_OPTIONS} > ${backup_filename}
