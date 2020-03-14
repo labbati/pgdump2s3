@@ -1,5 +1,7 @@
 # pgdump2s3
 
+![Docker Build Status](https://img.shields.io/docker/build/labbati/pgdump2s3)
+
 pgdump2s3 is a docker image that let you:
 
 1. backup a postgresql database and upload the backup to a S3 bucket,
