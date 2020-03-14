@@ -12,6 +12,7 @@ export PGPASSWORD=${PGPASSWORD:-test}
 export VERIFY_BACKUP=${VERIFY_BACKUP:-skip}
 export VERIFY_SCHEMA_NAME=${VERIFY_SCHEMA_NAME:-public}
 export VERIFY_TABLE_NAME=${VERIFY_TABLE_NAME}
+export AWS_CLI_OPTIONS=${AWS_CLI_OPTIONS:-''}
 
 backup_filename=backup-$(date '+%FT%H-%M-%S%Z')
 restore_database_name="pgdump2s3_backup_verify"
@@ -21,12 +22,12 @@ pg_dump ${PGDUMP_OPTIONS} > ${backup_filename}
 echo "Successfully dumped content to file: ${backup_filename}"
 
 echo "Copying file to S3 bucket '${AWS_S3_BUCKET}'"
-aws s3 cp ${backup_filename} "s3://${AWS_S3_BUCKET}/"
+aws s3 cp ${backup_filename} "s3://${AWS_S3_BUCKET}/" ${AWS_CLI_OPTIONS}
 
 if [ "${VERIFY_BACKUP}" == "verify" ]; then
     echo "Attempting restore for verification"
     echo "Downloading file from S3"
-    aws s3 cp "s3://${AWS_S3_BUCKET}/${backup_filename}" downloaded_backup
+    aws s3 cp "s3://${AWS_S3_BUCKET}/${backup_filename}" downloaded_backup  ${AWS_CLI_OPTIONS}
     psql -q -c "DROP DATABASE IF EXISTS ${restore_database_name};"
     psql -q -c "CREATE DATABASE ${restore_database_name};"
     echo "Restoring"

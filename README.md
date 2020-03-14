@@ -30,7 +30,7 @@ pgdump2s3 uses environment variables to configure its behavior.
 
 `VERIFY_BACKUP` [Default: `skip`]: whether the tool should verify the backup file. By default the backup file is not verified. If you want to run verification set value to `verify`. The restored database is dropped automatically after verification is completed. **WARNING**: restoring a backfile will take both memory and space on the postgresql server. Please use with awareness.
 
-`VERIFY_TABLE_NAME`: [Default: ``]: If provided, then the tool will not only restore the backup file, it will also check for the existence of the provided table name.
+`VERIFY_TABLE_NAME` [Default: ``]: If provided, then the tool will not only restore the backup file, it will also check for the existence of the provided table name.
 
 `VERIFY_SCHEMA_NAME` [Default: `public`]: The schema name for table existence verification.
 
@@ -39,6 +39,8 @@ pgdump2s3 uses environment variables to configure its behavior.
 `AWS_SECRET_ACCESS_KEY` [Required]: the aws access secret.
 
 `AWS_S3_BUCKET` [Required]: the aws bucket name.
+
+`AWS_CLI_OPTIONS` [Default: ``]: Optional aws cli parameters for the `cp` command. E.g. use this to setup encryption. See a list o [valid values from cli docs](https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html).
 
 ## Usage in docker
 
