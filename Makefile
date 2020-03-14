@@ -1,15 +1,10 @@
-VERSION := 0.1.0
-
 build:
-	docker build -t labbati/pgdump2s3:${VERSION} .
-
-publish: build
-	echo "About to publish"
+	docker build -t labbati/pgdump2s3:debug .
 
 run: build
-	docker run --rm labbati/pgdump2s3:${VERSION}
+	docker run --rm labbati/pgdump2s3:debug
 
 shell: build
-	docker run --rm -ti labbati/pgdump2s3:${VERSION} sh
+	docker run --rm -ti labbati/pgdump2s3:debug sh
 
-.PONY: build publish run shell
+.PONY: build run shell
