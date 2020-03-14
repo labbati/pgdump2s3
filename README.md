@@ -1,6 +1,8 @@
 # pgdump2s3
 
-![Docker Build Status](https://img.shields.io/docker/pulls/labbati/pgdump2s3)
+![Docker Build Status](https://img.shields.io/docker/build/labbati/pgdump2s3)
+
+![Docker Pulls](https://img.shields.io/docker/pulls/labbati/pgdump2s3)
 
 pgdump2s3 is a docker image that let you:
 
