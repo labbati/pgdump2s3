@@ -2,9 +2,9 @@
 
 ![Docker Pulls](https://img.shields.io/docker/pulls/labbati/pgdump2s3)
 
-pgdump2s3 is a docker image that let you:
+pgdump2s3 is a docker image that lets you:
 
-1. backup a postgresql database and upload the backup to a S3 bucket,
+1. backup a postgresql database and upload the backup to a AWS S3 bucket,
 2. optionally verify that the backup can be restored,
 3. optionally verify that a specific table exists inside the restored database.
 
@@ -28,11 +28,11 @@ pgdump2s3 uses environment variables to configure its behavior.
 
 `PGRESTORE_OPTIONS` [Default: ``]: command line options passed to `pg_restore`.
 
-`VERIFY_BACKUP` [Default: `skip`]: whether the tool should verify the backup file. By default the backup file is not verified. If you want to run verification set value to `verify`. The restored database is dropped automatically after verification is completed. **WARNING**: restoring a backfile will take both memory and space on the postgresql server. Please use with awareness.
+`VERIFY_BACKUP` [Default: `skip`]: whether the tool should verify the backup file. By default the backup file is not verified. If you want to run verification set value to `verify`. The restored database is dropped automatically after verification is completed. **WARNING**: restoring a backup file requires both memory and space on the postgresql server. Please use with awareness.
 
 `VERIFY_TABLE_NAME` [Default: ``]: If provided, then the tool will not only restore the backup file, it will also check for the existence of the provided table name.
 
-`VERIFY_SCHEMA_NAME` [Default: `public`]: The schema name for table existence verification.
+`VERIFY_SCHEMA_NAME` [Default: `public`]: The schema name for table existence verification. Only used in conjunction with `VERIFY_TABLE_NAME`.
 
 `AWS_ACCESS_KEY_ID` [Required]: the aws access key.
 
@@ -40,11 +40,11 @@ pgdump2s3 uses environment variables to configure its behavior.
 
 `AWS_S3_BUCKET` [Required]: the aws bucket name.
 
-`AWS_CLI_OPTIONS` [Default: ``]: Optional aws cli parameters for the `cp` command. E.g. use this to setup encryption. See a list o [valid values from cli docs](https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html).
+`AWS_CLI_OPTIONS` [Default: ``]: Optional aws cli parameters for the `cp` command. E.g. use this to setup encryption. See a list of [valid values from cli docs](https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html).
 
 ## Usage in docker
 
-Example: using psdump2s3 to backup a database from a server in the current machine.
+Example: using pqdump2s3 to backup a database from a server in the current machine.
 
 ```
 docker run --rm \
@@ -92,7 +92,7 @@ docker-compose run --rm backup
 
 ## Usage in kubernetes
 
-The following section assume that a [k8s secret](https://kubernetes.io/docs/concepts/configuration/secret/) `aws-credentials` exists with keys `access-key` and `access-secret`.
+The following section assumes that a [k8s secret](https://kubernetes.io/docs/concepts/configuration/secret/) `aws-credentials` exists with keys `access-key` and `access-secret`.
 
 You can create one with the following command:
 
@@ -206,6 +206,7 @@ spec:
                       key: access-secret
           restartPolicy: Never
 ```
+
 And then apply it
 
 ```
