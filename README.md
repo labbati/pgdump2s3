@@ -44,7 +44,7 @@ pgdump2s3 uses environment variables to configure its behavior.
 
 ## Usage in docker
 
-Example: using pqdump2s3 to backup a database from a server in the current machine.
+Example: using pgdump2s3 to backup a database from a server in the current machine.
 
 ```
 docker run --rm \
